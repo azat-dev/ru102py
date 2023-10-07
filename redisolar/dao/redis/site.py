@@ -33,12 +33,19 @@ class SiteDaoRedis(SiteDaoBase, RedisDaoBase):
             raise SiteNotFound()
 
         return FlatSiteSchema().load(site_hash)
+    
+    def _get_site_ids(self) -> int:
+        site_ids_key = self.key_schema.site_ids_key()
+        return self.redis.smembers(site_ids_key)
+    
+    def _get_site_hash(self, site_id: int):
+        site_hash_key = self.key_schema.site_hash_key(site_id)
+        return self.redis.hgetall(site_hash_key)
 
     def find_all(self, **kwargs) -> Set[Site]:
         """Find all Sites in Redis."""
-        # START Challenge #1
-        # Remove this line when you've written code to build `site_hashes`.
-        site_hashes = []  # type: ignore
-        # END Challenge #1
+
+        site_ids = self._get_site_ids()
+        site_hashes = [self._get_site_hash(site_id) for site_id in site_ids]
 
         return {FlatSiteSchema().load(site_hash) for site_hash in site_hashes}
