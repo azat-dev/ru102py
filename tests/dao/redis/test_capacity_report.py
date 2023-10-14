@@ -46,9 +46,8 @@ def test_get_report(readings, capacity_report_dao):
     assert lowest[4].capacity > lowest[0].capacity
 
 
-@pytest.mark.skip("Remove for challenge #4")
 def test_get_rank(readings, capacity_report_dao):
     for reading in readings:
         capacity_report_dao.update(reading)
-    assert capacity_report_dao.get_rank(readings[0].site_id) == 9
-    assert capacity_report_dao.get_rank(readings[9].site_id) == 0
+    assert capacity_report_dao.get_rank(readings[0].site_id) == readings[0].current_capacity
+    assert capacity_report_dao.get_rank(readings[9].site_id) == readings[9].current_capacity
